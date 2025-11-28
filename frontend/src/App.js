@@ -1,54 +1,58 @@
-// Example for a React component, e.g., in frontend/src/App.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import HomePage from "./Pages/HomePage";
+import HowItWorks from "./Pages/HowItWorks";
+import GreenRouteDemo from "./Pages/GreenRouteDemo";
+import CO2Calculator from "./Pages/CO2Calculator";
+import AboutPage from "./Pages/AboutPage";
+import './App.css';  // Import the CSS file
 
 function App() {
-  // State to store the message from the backend
   const [message, setMessage] = useState('');
-  // State to store any errors
   const [error, setError] = useState(null);
 
-  // useEffect hook to fetch data when the component mounts
   useEffect(() => {
-    // We define an async function inside the effect
     const fetchData = async () => {
       try {
-        // Fetch data from your backend's /hello endpoint
         const response = await fetch('http://localhost:8080/hello');
-
-        // Check if the request was successful
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        // Since the backend returns plain text, we use .text()
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.text();
-        
-        // Update the state with the message from the backend
         setMessage(data);
       } catch (e) {
-        // If an error occurs, update the error state
         setError(e.message);
         console.error("Failed to fetch data:", e);
       }
     };
-
-    // Call the function to fetch data
     fetchData();
-  }, []); // The empty array [] means this effect runs only once when the component mounts
+  }, []);
 
-  // Render the component's UI
   return (
-    <div>
-      <h1>Frontend Application</h1>
-      {/* Display a loading message until the data is fetched */}
-      {!message && !error && <p>Loading message from backend...</p>}
-      
-      {/* Display the message from the backend if it exists */}
-      {message && <p><strong>Message from backend:</strong> {message}</p>}
+    <Router>
+      <nav className="navbar">
+        <div className="logo">EcoRoute</div>
+        <div className="menu">
+          <Link to="/">Home</Link>
+          <Link to="/how-it-works">How It Works</Link>
+          <Link to="/demo">Green Route Demo</Link>
+          <Link to="/calculator">CO₂ Calculator</Link>
+          <Link to="/about">About</Link>
+        </div>
+      </nav>
 
-      {/* Display an error message if the fetch failed */}
-      {error && <p><strong>Error:</strong> {error}</p>}
-    </div>
+      <div className="backend-message">
+        {!message && !error && <p>Loading message from backend...</p>}
+        {message && <p><strong>Message from backend:</strong> {message}</p>}
+        {error && <p><strong>Error:</strong> {error}</p>}
+      </div>
+
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/demo" element={<GreenRouteDemo />} />
+        <Route path="/calculator" element={<CO2Calculator />} />
+        <Route path="/about" element={<AboutPage />} />
+      </Routes>
+    </Router>
   );
 }
 

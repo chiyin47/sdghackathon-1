@@ -9,16 +9,16 @@
     "@testing-library/user-event": "^13.5.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-router-dom": "^7.9.6",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-  "start": "concurrently \"npm run frontend\" \"npm run backend\"",
-  "frontend": "react-scripts start",
-  "backend": "cd ../backend && mvnw.cmd spring-boot:run",
-  "dev": "npm start"
-}
-,
+    "start": "concurrently \"npm run frontend\" \"npm run backend\"",
+    "frontend": "react-scripts start",
+    "backend": "cd ../backend && mvnw.cmd spring-boot:run",
+    "dev": "npm start"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
