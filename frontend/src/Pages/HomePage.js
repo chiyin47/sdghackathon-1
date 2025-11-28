@@ -1,6 +1,6 @@
 import React from 'react';
-import Chatbot from '../Chatbot';
-import './HomePage.css';
+import Chatbot from './Chatbot';
+import './CssPages/HomePage.css';
 
 function HomePage() {
   return (

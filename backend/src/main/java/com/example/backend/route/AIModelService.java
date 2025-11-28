@@ -1,71 +1,83 @@
 package com.example.backend.route;
 
-import com.google.maps.model.DirectionsLeg;
-import com.google.maps.model.DirectionsResult;
-import com.google.maps.model.DirectionsRoute;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.*;
+import org.springframework.core.ParameterizedTypeReference;
 
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class AIModelService {
 
-    /**
-     * Finds the best route by considering traffic and fuel efficiency.
-     * It calculates a score for each route and picks the one with the lowest score.
-     *
-     * @param result The DirectionsResult containing multiple routes.
-     * @return A new DirectionsResult containing only the best route.
-     */
-    public DirectionsResult findBestRoute(DirectionsResult result) {
-        if (result == null || result.routes == null || result.routes.length == 0) {
-            return result;
-        }
+  @Value("${gemini.api.key}")
+  private String apiKey;
 
-        // Find the route with the best score (lower is better).
-        // The score is a combination of duration in traffic and estimated fuel
-        // consumption.
-        DirectionsRoute bestRoute = Arrays.stream(result.routes)
-                .min(Comparator.comparingDouble(this::calculateRouteScore))
-                .orElse(result.routes[0]); // Default to the first route
+  @Value("${gemini.model:gemini-1.5-pro}")
+  private String model;
 
-        DirectionsResult newResult = new DirectionsResult();
-        newResult.routes = new DirectionsRoute[] { bestRoute };
-        newResult.geocodedWaypoints = result.geocodedWaypoints;
+  private final RestTemplate restTemplate = new RestTemplate();
 
-        return newResult;
+  /**
+   * Sends user message to Gemini AI and returns the AI response.
+   * 
+   * @param userMessage The message from the user
+   * @return AI response text
+   */
+  public String getAIResponse(String userMessage) {
+    if (userMessage == null || userMessage.isBlank()) {
+      return "Please provide a valid message.";
     }
 
-    private double calculateRouteScore(DirectionsRoute route) {
-        // Constants for weighting time vs. fuel. These can be tuned.
-        final double timeWeight = 0.5;
-        final double fuelWeight = 0.5;
-        final double averageFuelConsumption = 0.07; // Liters per kilometer
+    try {
+      // Gemini AI REST endpoint
+      String url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent";
 
-        long totalDurationInTraffic = 0;
-        long totalDistance = 0;
+      // Build JSON payload
+      String payload = """
+          {
+            "prompt": [{"text": "%s"}],
+            "temperature": 0.7,
+            "maxOutputTokens": 256
+          }
+          """.formatted(userMessage);
 
-        for (DirectionsLeg leg : route.legs) {
-            // The duration in traffic is not always available.
-            // When it's not, we fall back to the normal duration.
-            if (leg.durationInTraffic != null) {
-                totalDurationInTraffic += leg.durationInTraffic.inSeconds;
-            } else {
-                totalDurationInTraffic += leg.duration.inSeconds;
-            }
-            totalDistance += leg.distance.inMeters;
+      // Set headers
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_JSON);
+      headers.setBearerAuth(apiKey);
+
+      HttpEntity<String> entity = new HttpEntity<>(payload, headers);
+
+      // Make POST request
+      ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+          url,
+          HttpMethod.POST,
+          entity,
+          new ParameterizedTypeReference<Map<String, Object>>() {
+          });
+
+      Map<String, Object> body = response.getBody();
+      if (body != null && body.containsKey("candidates")) {
+        Object candidatesObj = body.get("candidates");
+        if (candidatesObj instanceof List<?> candidatesList && !candidatesList.isEmpty()) {
+          Object firstCandidate = candidatesList.get(0);
+          if (firstCandidate instanceof Map<?, ?> firstMap) {
+            Object content = firstMap.get("content");
+            if (content != null)
+              return content.toString();
+          }
         }
+      }
 
-        // Calculate estimated fuel consumption in liters.
-        double fuelUsed = (totalDistance / 1000.0) * averageFuelConsumption;
+      return "AI did not return a response.";
 
-        // Simple scoring model: a weighted sum of time and fuel.
-        // Since the units are different (seconds and liters), this is a simplified
-        // approach.
-        // A more advanced model could normalize these values before combining them.
-        double score = (timeWeight * totalDurationInTraffic) + (fuelWeight * fuelUsed);
-
-        return score;
+    } catch (Exception e) {
+      // Log the error and return a friendly message
+      e.printStackTrace();
+      return "Error contacting AI: " + e.getMessage();
     }
+  }
 }
