@@ -63,13 +63,8 @@ public class AIGreenRouteService {
 
             String aiResponse = aiModelService.getAIResponse(prompt);
 
-            String fuelPrediction = "N/A";
-            double parsedFuel = Double.MAX_VALUE; // Initialize with a high value for comparison
-            String efficiencyClassification = "N/A";
-            String drivingRecommendation = "No specific recommendation.";
-            String peakHoursAdvice = "No specific peak hour advice.";
-            String fullPredictionSummary = "No AI prediction available.";
-
+            String fuelPrediction = "Fuel prediction unavailable"; // Default to a descriptive message
+            double parsedFuel = Double.MAX_VALUE; // Initialize with a high value, meaning prediction is not parsed or unavailable
 
             // Parse AI response
             if (aiResponse != null && !aiResponse.isEmpty()) {
@@ -77,12 +72,16 @@ public class AIGreenRouteService {
                 Pattern fuelPattern = Pattern.compile("Fuel: ([\\d.]+) liters");
                 Matcher fuelMatcher = fuelPattern.matcher(aiResponse);
                 if (fuelMatcher.find()) {
-                    fuelPrediction = fuelMatcher.group(1) + " liters";
+                    String fuelValueStr = fuelMatcher.group(1);
                     try {
-                        parsedFuel = Double.parseDouble(fuelMatcher.group(1));
+                        parsedFuel = Double.parseDouble(fuelValueStr);
+                        fuelPrediction = fuelValueStr + " liters"; // Only set if successfully parsed
                     } catch (NumberFormatException e) {
-                        System.err.println("Failed to parse fuel prediction: " + fuelMatcher.group(1));
+                        System.err.println("Failed to parse fuel prediction from AI response: '" + fuelValueStr + "' for route " + routeNumber);
+                        // parsedFuel remains Double.MAX_VALUE, fuelPrediction remains "Fuel prediction unavailable"
                     }
+                } else {
+                    System.err.println("AI response did not contain expected 'Fuel: X liters' pattern for route " + routeNumber + ". Response: " + aiResponse.substring(0, Math.min(aiResponse.length(), 200)) + "...");
                 }
 
                 // Extract Efficiency
