@@ -10,6 +10,7 @@ public class RouteResponse {
     private String fuelSavingPrediction; // New field for AI prediction
     private int routeNumber;             // New field for route identification
     private String color;                // New field for route efficiency color
+    private double parsedFuelConsumption; // New field to store numerical fuel consumption
     private List<LatLng> coordinates;
     private List<LatLng> waypoints;
 
@@ -103,5 +104,13 @@ public class RouteResponse {
 
     public void setWaypoints(List<LatLng> waypoints) {
         this.waypoints = waypoints;
+    }
+
+    public double getParsedFuelConsumption() {
+        return parsedFuelConsumption;
+    }
+
+    public void setParsedFuelConsumption(double parsedFuelConsumption) {
+        this.parsedFuelConsumption = parsedFuelConsumption;
     }
 }
