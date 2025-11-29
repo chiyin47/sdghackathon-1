@@ -20,8 +20,8 @@ function CO2Calculator({ distance, duration, fuelUsed }) {
   // Calculate CO2 emissions (average: 2.31 kg CO2 per liter of gasoline)
   const co2Emissions = (fuelLiters * 2.31).toFixed(2);
   
-  // Calculate fuel cost (assuming average price per liter)
-  const fuelCostPerLiter = 1.50; // Can be made configurable
+  // Calculate fuel cost (using recent RON95 price in Malaysia)
+  const fuelCostPerLiter = 2.05; 
   const totalFuelCost = (fuelLiters * fuelCostPerLiter).toFixed(2);
   
   // Average speed
@@ -37,7 +37,7 @@ function CO2Calculator({ distance, duration, fuelUsed }) {
         </div>
         <div className="stat-row">
           <span className="stat-text highlight">{co2Emissions} kg CO₂</span>
-          <span className="stat-text">${totalFuelCost}</span>
+          <span className="stat-text">RM{totalFuelCost}</span>
           <span className="stat-text">{avgSpeed} km/h</span>
         </div>
       </div>
