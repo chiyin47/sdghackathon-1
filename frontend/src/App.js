@@ -8,14 +8,14 @@ import './App.css';
 
 function App() {
   return (
-    <Router basename="/sdghackathon-1">
+    <Router>
       <nav className="navbar">
         
         {/* LEFT SIDE LOGO */}
         <div className="logo">
           <Link to="/">
             <img
-              src="/EcoRouteLogo.png"
+              src={process.env.PUBLIC_URL + "/EcoRouteLogo.png"}
               alt="EcoRoute Logo"
               className="logo-image"
             />
