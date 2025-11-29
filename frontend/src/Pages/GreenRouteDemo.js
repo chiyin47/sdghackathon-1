@@ -243,10 +243,12 @@ function GreenRouteDemo() {
               />
 
               <div className="ai-prediction">
-                <p>
-                  <strong>AI Insight:</strong>{' '}
-                  {truncateText(selectedRoute.fuelSavingPrediction, 300)}
-                </p>
+                <strong>AI Insight:</strong>
+                <ul>
+                  {selectedRoute.fuelSavingPrediction && selectedRoute.fuelSavingPrediction.split('\n').filter(line => line.trim() !== '').map((line, index) => (
+                    <li key={index}>{line}</li>
+                  ))}
+                </ul>
               </div>
 
               <div className="navigation-buttons">

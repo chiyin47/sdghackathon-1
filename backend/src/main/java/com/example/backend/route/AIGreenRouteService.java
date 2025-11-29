@@ -49,18 +49,16 @@ public class AIGreenRouteService {
 
             // Create a prompt for the AI model with more detailed requests
             String prompt = String.format(
-                    "Critically analyze this specific route for fuel efficiency, providing a unique and comprehensive AI-driven deep thought suggestion. " +
-                    "This route covers %d meters and has an estimated duration of %d seconds. " +
-                    "Provide a precise and differentiated estimate of fuel consumption in liters for an average car, *meticulously factoring in dynamic traffic patterns, potential congestion during typical peak hours, and road characteristics specific to this exact distance and duration*. " +
-                    "Classify its overall efficiency distinctly (e.g., 'exceptionally efficient', 'highly efficient', 'moderately efficient', 'less efficient', 'inefficient'). " +
-                    "Offer highly specific, actionable, and unique driving recommendations tailored precisely to this route's segments to maximize fuel savings and minimize environmental impact. " +
-                    "Furthermore, detail advanced strategies to navigate *this specific route* during typical peak hours, suggesting optimal departure times, alternative segment approaches, and congestion avoidance tactics to significantly save fuel. " +
-                    "Your response MUST be structured clearly as follows:\n\n" +
+                    "Analyze the fuel efficiency of a route covering %d meters with an estimated duration of %d seconds. " +
+                    "Provide an estimated fuel consumption in liters for an average car. " +
+                    "Classify its efficiency. " +
+                    "Provide a brief driving recommendation. " +
+                    "Suggest a strategy for peak hours. " +
+                    "Response format:\n" +
                     "Fuel: X.XX liters\n" +
-                    "Efficiency: [Distinct Classification]\n" +
-                    "Recommendation: [Highly specific, actionable driving recommendations for this route]\n" +
-                    "Peak Hours Strategy: [Advanced, route-specific strategies for avoiding congestion and saving fuel]\n\n" +
-                    "Ensure all information is concise, uniquely tailored to this route, and focuses on practical, differentiating advice.",
+                    "Efficiency: [Classification]\n" +
+                    "Recommendation: [Brief recommendation]\n" +
+                    "Peak Hours Strategy: [Brief strategy]",
                     distanceMeters, durationSeconds);
 
             String aiResponse = aiModelService.getAIResponse(prompt);

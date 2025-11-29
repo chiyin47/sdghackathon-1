@@ -16,7 +16,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "concurrently \"npm run frontend\" \"npm run backend\"",
+    "start": "concurrently --kill-others-on-fail \"npm run frontend\" \"npm run backend\"",
     "frontend": "react-scripts start",
     "backend": "cd ../backend && mvnw.cmd spring-boot:run",
     "dev": "npm start"
