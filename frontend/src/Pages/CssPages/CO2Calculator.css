@@ -35,13 +35,14 @@
 .stat-text.highlight {
   color: #2e7d32;
   font-weight: 600;
+  cursor: default;
 }
 
 @media (max-width: 600px) {
   .stat-row {
     flex-direction: column;
   }
-  
+
   .stat-text {
     width: 100%;
   }
